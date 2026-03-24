@@ -4,74 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portafolio - Rafa Cush</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #F6F4F1; 
-            --blue-cobalt: #0040A5;
-            --dark-navy: #1A1A1A;
-            --tag-bg: #E8E8E8;
-            --white: #FFFFFF;
-            --transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            --bg-color: #F2F2F2; 
+            --blue-cobalt: #0056FF; 
+            --dark-navy: #1A1A1A; 
+            --tag-bg: #E0E0E0; 
         }
 
-        body { margin: 0; background-color: var(--bg-color); font-family: 'Inter', sans-serif; display: flex; justify-content: center; min-height: 100vh; color: var(--dark-navy); overflow-x: hidden; }
-        .main-wrapper { width: 100%; max-width: 450px; padding: 20px; display: flex; flex-direction: column; align-items: center; padding-bottom: 150px; }
-        
-        /* Perfil */
-        .avatar-box { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--blue-cobalt); margin: 0 auto; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); cursor: pointer; }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-        h1 { font-size: 22px; font-weight: 800; margin: 15px 0 5px; text-transform: uppercase; letter-spacing: 1px; }
+        body { margin: 0; background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--dark-navy); display: flex; justify-content: center; }
+        .mobile-viewport { width: 100%; max-width: 414px; min-height: 100vh; position: relative; padding-bottom: 120px; display: flex; flex-direction: column; align-items: center; }
+        .main-content { width: 90%; margin-top: 40px; }
 
-        /* Menú Navegación */
-        .nav-container { width: fit-content; background: var(--dark-navy); border-radius: 30px; padding: 6px; display: flex; position: relative; z-index: 1000; margin: 10px 0 25px; transition: var(--transition); }
-        .nav-container.floating { position: fixed; bottom: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
-        .nav-slider { position: absolute; top: 6px; bottom: 6px; background: var(--blue-cobalt); border-radius: 25px; transition: var(--transition); z-index: 1; }
-        .nav-item { padding: 10px 22px; color: white; font-size: 12px; font-weight: 700; position: relative; z-index: 2; cursor: pointer; text-transform: uppercase; }
+        h1.main-title { font-size: 24px; font-weight: 900; text-transform: uppercase; margin: 0; }
+        .tags-label { font-size: 14px; color: #666; margin-bottom: 15px; display: block; }
 
-        /* Tags */
-        .tags-wrapper { width: 100%; margin-bottom: 20px; text-align: left; }
-        .tags-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .tag-pill { background: var(--tag-bg); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .tag-pill.active { background: var(--blue-cobalt); color: white; }
+        .tags-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; min-height: 40px; }
+        .tag-pill { background-color: var(--tag-bg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; border: none; text-transform: capitalize; }
+        .tag-pill.active { background-color: var(--blue-cobalt); color: white; }
 
-        /* Grilla de Videos */
-        .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .video-card { border-radius: 18px; aspect-ratio: 9 / 16; background: #fff; overflow: hidden; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .video-cover { width: 100%; height: 100%; object-fit: cover; cursor: pointer; position: absolute; z-index: 10; transition: 0.4s; }
-        .instagram-container { width: 100%; height: 100%; display: none; overflow-y: auto; background: white; }
-        
-        /* Editor Panel */
-        .admin-panel { display: none; position: fixed; bottom: 100px; background: white; padding: 20px; border-radius: 24px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); z-index: 2000; width: 90%; max-width: 380px; border: 1px solid #ddd; }
-        body.admin-mode .admin-panel { display: block; }
-        .admin-panel textarea, .admin-panel input { width: 100%; margin-bottom: 12px; padding: 12px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 13px; }
-        .admin-panel button { width: 100%; background: var(--blue-cobalt); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .del-btn { position: absolute; top: 8px; right: 8px; background: #ff4444; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; z-index: 20; cursor: pointer; border: 2px solid white; }
+        .video-grid { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+        .video-card { 
+            width: 100%; aspect-ratio: 1/1; background-color: #000; border-radius: 35px; 
+            overflow: hidden; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            display: flex; align-items: center; justify-content: center;
+        }
+        iframe, video, img { width: 100%; height: 100%; border: none; display: block; object-fit: cover; }
+
+        .nav-bar { position: fixed; bottom: 30px; width: 280px; height: 55px; background-color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; z-index: 1000; }
+        .nav-item { flex: 1; height: 45px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 25px; transition: 0.3s; }
+        .nav-item.active { background-color: var(--blue-cobalt); }
+
+        /* Estilos Admin */
+        #adminBtn { display: none; position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: var(--blue-cobalt); color: white; border-radius: 50%; border: none; font-size: 30px; font-weight: bold; cursor: pointer; z-index: 3000; }
+        #adminMenu { display: none; position: fixed; top: 80px; right: 20px; width: 300px; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 3000; border: 1px solid #ddd; }
+        .btn-save { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--blue-cobalt); color: white; margin-top: 10px; }
+        .input-admin { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; }
     </style>
 </head>
 <body>
 
-<div class="main-wrapper">
-    <div class="profile-section">
-        <div class="avatar-box" onclick="if(isAdmin) changePhoto()">
-            <img id="userPhoto" src="assets/profile/avatar.jpg" alt="Rafa Cush" onerror="this.src='https://via.placeholder.com/150'">
+<div class="mobile-viewport">
+    <div class="main-content">
+        <h1 class="main-title">PROYECTOS DESTACADOS</h1>
+        <span class="tags-label">#tags</span>
+        <div class="tags-container" id="dynamicTags"></div>
+        <span style="font-weight:700; display:block; margin-bottom:15px;">Mas recientes</span>
+
+        <div id="inicio" class="page active">
+            <div class="video-grid" id="videoGrid"></div>
         </div>
-        <h1 id="userName">RAFA CUSH</h1>
+
+        <div id="sobremi" class="page" style="display:none;">
+            <div style="background:white; padding:30px; border-radius:25px; text-align: center;">
+                <h2>Rafa Cush</h2>
+                <p>Filmmaker & Editor</p>
+            </div>
+        </div>
     </div>
 
-    <nav class="nav-container" id="mainNav">
-        <div class="nav-slider" id="navSlider"></div>
-        <div class="nav-item" onclick="filterByTag('all', this)">INICIO</div>
-        <div class="nav-item" onclick="alert('Formando criterio | Capturando la esencia.')">SOBRE MÍ</div>
-    </nav>
-
-    <div class="tags-wrapper">
-        <span style="font-size: 11px; font-weight: 800; color: #999; text-transform: uppercase;">#tags</span>
-        <div class="tags-list" id="tagsList"></div>
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="showPage('inicio', this)">INICIO</div>
+        <div class="nav-item" onclick="showPage('sobremi', this)">SOBRE MÍ</div>
     </div>
+</div>
 
-    <div class="video-grid" id="videoGrid"></div>
+<button id="adminBtn" onclick="toggleAdminMenu()">+</button>
+<div id="adminMenu">
+    <h3>Nuevo Proyecto</h3>
+    <select id="mediaType" class="input-admin" onchange="updateAdminForm()">
+        <option value="embed">URL (YouTube / Instagram)</option>
+        <option value="local">Archivo del MacBook (Video/Foto)</option>
+    </select>
+    <textarea id="embedInput" class="input-admin" placeholder="Pega URL o código iframe..."></textarea>
+    <input type="file" id="localFileInput" class="input-admin" style="display:none;" accept="video/*,image/*">
+    <input type="text" id="projectTags" class="input-admin" placeholder="Tags (ej: fitness, comercial)">
+    <button class="btn-action btn-save" onclick="addProject()">GUARDAR</button>
+</div>
 
-    <div class="admin-panel" id="adminPanel">
-        <h3 style="margin:0 0 15px 0; font-size:16px;">Panel de Control</h3>
-        <input type="text" id="inCover" placeholder="Ruta Portada: assets/covers/imagen.jpg">
-        <textarea id="inEmbed" rows="4" placeholder="Código '
+<script>
+    let devMode = false;
+    let currentTag = 'todos';
+    let db = JSON.parse(localStorage.getItem('rafa_portfolio_gh_v1')) || [];
+
+    // Comando Secreto: Shift + Command + P
+    window.addEventListener('keydown', (e) => {
+        if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
+            e.preventDefault();
+            devMode = !devMode;
+            document.getElementById('adminBtn').style.display = devMode ? 'block' : 'none';
+        }
+    });
+
+    function toggleAdminMenu() {
+        const m = document.getElementById('adminMenu');
+        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function updateAdminForm() {
+        const type = document.getElementById('mediaType').value;
+        document.getElementById('embedInput').style.display = type === 'embed' ? 'block' : 'none';
+        document.getElementById('localFileInput').style.display = type === 'local' ? 'block' : 'none';
+    }
+
+    function getEmbedUrl(input) {
+        if (input.includes('<iframe')) {
+            const srcMatch = input.match(/src=["']([^"']+)["']/);
+            return srcMatch ? srcMatch[1] : null;
+        }
+        const ytMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/);
+        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?enablejsapi=1`;
+        const igMatch = input.match(/(?:instagram\.com\/(?:reel|p)\/)([^/?#&]+)/);
+        if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed`;
+        return input;
+    }
+
+    function renderAll() {
+        const grid = document.getElementById('videoGrid');
+        const tagContainer = document.getElementById('dynamicTags');
+        
+        const tagsSet = new Set(['todos']);
+        db.forEach(item => item.tags.forEach(t => tagsSet.add(t.trim().toLowerCase())));
+        
+        tagContainer.innerHTML = Array.from(tagsSet).map(t => 
+            `<button class="tag-pill ${currentTag === t ? 'active' : ''}" onclick="filterByTag('${t}')">${t}</button>`
+        ).join('');
+
+        grid.innerHTML = db.map((item, i) => {
+            if (currentTag !== 'todos' && !item.tags.includes(currentTag)) return '';
+            
+            let contentHtml = "";
+            if (item.type === 'local') {
+                contentHtml = item.isImage 
+                    ? `<img src="${item.content}">` 
+                    : `<video src="${item.content}" controls playsinline></video>`;
+            } else {
+                const url = getEmbedUrl(item.content);
+                contentHtml = `<iframe src="${url}" allowfullscreen allowtransparency="true"></iframe>`;
+            }
+            return `<div class="video-card">${contentHtml}</div>`;
+        }).join('');
+    }
+
+    function filterByTag(tag) {
+        currentTag = tag;
+        renderAll();
+    }
+
+    function addProject() {
+        const type = document.getElementById('mediaType').value;
+        const tags = document.getElementById('projectTags').value.split(',').map(t => t.trim().toLowerCase());
+        
+        if (type === 'local') {
+            const file = document.getElementById('localFileInput').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    db.push({ type: 'local', content: e.target.result, tags, isImage: file.type.startsWith('image/') });
+                    saveAndRefresh();
+                };
+                reader.readAsDataURL(file);
+            }
+        } else {
+            const content = document.getElementById('embedInput').value.trim();
+            if (content) {
+                db.push({ type: 'embed', content, tags });
+                saveAndRefresh();
+            }
+        }
+    }
+
+    function saveAndRefresh() {
+        localStorage.setItem('rafa_portfolio_gh_v1', JSON.stringify(db));
+        renderAll();
+        toggleAdminMenu();
+        document.getElementById('embedInput').value = "";
+        document.getElementById('projectTags').value = "";
+    }
+
+    function showPage(pageId, el) {
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.getElementById(pageId).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    window.onload = renderAll;
+</script>
+</body>
+</html>
