@@ -25,22 +25,41 @@
         .tag-pill.active { background-color: var(--blue-cobalt); color: white; }
 
         .video-grid { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+        
+        /* Contenedor optimizado para Instagram y limpieza de scroll */
         .video-card { 
             width: 100%; aspect-ratio: 1/1; background-color: #000; border-radius: 35px; 
             overflow: hidden; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
             display: flex; align-items: center; justify-content: center;
         }
-        iframe, video, img { width: 100%; height: 100%; border: none; display: block; object-fit: cover; }
+
+        /* Bloqueo de scroll interno y ajuste de escala para ocultar UI de IG */
+        .video-card iframe { 
+            width: 100%; height: 115%; /* Un poco más alto para empujar la UI hacia afuera */
+            border: none; pointer-events: auto;
+            position: absolute; top: -7.5%; /* Centrado vertical para recortar arriba y abajo */
+        }
+
+        video, img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Botón de Pantalla Completa */
+        .fullscreen-btn {
+            position: absolute; bottom: 20px; right: 20px;
+            width: 40px; height: 40px; background: rgba(0, 86, 255, 0.8);
+            border: none; border-radius: 50%; color: white; font-size: 20px;
+            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
 
         .nav-bar { position: fixed; bottom: 30px; width: 280px; height: 55px; background-color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; z-index: 1000; }
         .nav-item { flex: 1; height: 45px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 25px; transition: 0.3s; }
         .nav-item.active { background-color: var(--blue-cobalt); }
 
-        /* Estilos Admin */
-        #adminBtn { display: none; position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: var(--blue-cobalt); color: white; border-radius: 50%; border: none; font-size: 30px; font-weight: bold; cursor: pointer; z-index: 3000; }
+        /* Admin y Portadas */
+        #adminBtn { display: none; position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: var(--blue-cobalt); color: white; border-radius: 50%; border: none; font-size: 30px; z-index: 3000; }
         #adminMenu { display: none; position: fixed; top: 80px; right: 20px; width: 300px; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 3000; border: 1px solid #ddd; }
-        .btn-save { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--blue-cobalt); color: white; margin-top: 10px; }
-        .input-admin { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; }
+        .input-admin { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; }
+        .btn-save { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--blue-cobalt); color: white; }
     </style>
 </head>
 <body>
@@ -51,23 +70,10 @@
         <span class="tags-label">#tags</span>
         <div class="tags-container" id="dynamicTags"></div>
         <span style="font-weight:700; display:block; margin-bottom:15px;">Mas recientes</span>
-
-        <div id="inicio" class="page active">
-            <div class="video-grid" id="videoGrid"></div>
-        </div>
-
-        <div id="sobremi" class="page" style="display:none;">
-            <div style="background:white; padding:30px; border-radius:25px; text-align: center;">
-                <h2>Rafa Cush</h2>
-                <p>Filmmaker & Editor</p>
-            </div>
-        </div>
+        <div id="inicio" class="page active"><div class="video-grid" id="videoGrid"></div></div>
+        <div id="sobremi" class="page" style="display:none;"><div style="background:white; padding:30px; border-radius:25px; text-align: center;"><h2>Rafa Cush</h2><p>Filmmaker & Editor</p></div></div>
     </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active" onclick="showPage('inicio', this)">INICIO</div>
-        <div class="nav-item" onclick="showPage('sobremi', this)">SOBRE MÍ</div>
-    </div>
+    <div class="nav-bar"><div class="nav-item active" onclick="showPage('inicio', this)">INICIO</div><div class="nav-item" onclick="showPage('sobremi', this)">SOBRE MÍ</div></div>
 </div>
 
 <button id="adminBtn" onclick="toggleAdminMenu()">+</button>
@@ -75,20 +81,21 @@
     <h3>Nuevo Proyecto</h3>
     <select id="mediaType" class="input-admin" onchange="updateAdminForm()">
         <option value="embed">URL (YouTube / Instagram)</option>
-        <option value="local">Archivo del MacBook (Video/Foto)</option>
+        <option value="local">Archivo (Video/Foto)</option>
     </select>
-    <textarea id="embedInput" class="input-admin" placeholder="Pega URL o código iframe..."></textarea>
+    <textarea id="embedInput" class="input-admin" placeholder="Pega URL..."></textarea>
     <input type="file" id="localFileInput" class="input-admin" style="display:none;" accept="video/*,image/*">
-    <input type="text" id="projectTags" class="input-admin" placeholder="Tags (ej: fitness, comercial)">
-    <button class="btn-action btn-save" onclick="addProject()">GUARDAR</button>
+    <label style="font-size:12px;">Portada opcional:</label>
+    <input type="file" id="posterInput" class="input-admin" accept="image/*">
+    <input type="text" id="projectTags" class="input-admin" placeholder="Tags (ej: fitness, cafe)">
+    <button class="btn-save" onclick="addProject()">GUARDAR</button>
 </div>
 
 <script>
     let devMode = false;
     let currentTag = 'todos';
-    let db = JSON.parse(localStorage.getItem('rafa_portfolio_gh_v1')) || [];
+    let db = JSON.parse(localStorage.getItem('rafa_db_portadas_v1')) || [];
 
-    // Comando Secreto: Shift + Command + P
     window.addEventListener('keydown', (e) => {
         if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
             e.preventDefault();
@@ -99,7 +106,7 @@
 
     function toggleAdminMenu() {
         const m = document.getElementById('adminMenu');
-        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+        m.style.display = m.style.display === 'block' ? 'none' : 'block';
     }
 
     function updateAdminForm() {
@@ -109,78 +116,82 @@
     }
 
     function getEmbedUrl(input) {
-        if (input.includes('<iframe')) {
-            const srcMatch = input.match(/src=["']([^"']+)["']/);
-            return srcMatch ? srcMatch[1] : null;
-        }
         const ytMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/);
-        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?enablejsapi=1`;
+        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?enablejsapi=1&autoplay=0`;
         const igMatch = input.match(/(?:instagram\.com\/(?:reel|p)\/)([^/?#&]+)/);
-        if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed`;
+        if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/captioned/`;
         return input;
     }
 
     function renderAll() {
         const grid = document.getElementById('videoGrid');
         const tagContainer = document.getElementById('dynamicTags');
-        
         const tagsSet = new Set(['todos']);
         db.forEach(item => item.tags.forEach(t => tagsSet.add(t.trim().toLowerCase())));
-        
-        tagContainer.innerHTML = Array.from(tagsSet).map(t => 
-            `<button class="tag-pill ${currentTag === t ? 'active' : ''}" onclick="filterByTag('${t}')">${t}</button>`
-        ).join('');
+        tagContainer.innerHTML = Array.from(tagsSet).map(t => `<button class="tag-pill ${currentTag === t ? 'active' : ''}" onclick="filterByTag('${t}')">${t}</button>`).join('');
 
         grid.innerHTML = db.map((item, i) => {
             if (currentTag !== 'todos' && !item.tags.includes(currentTag)) return '';
             
             let contentHtml = "";
             if (item.type === 'local') {
-                contentHtml = item.isImage 
-                    ? `<img src="${item.content}">` 
-                    : `<video src="${item.content}" controls playsinline></video>`;
+                contentHtml = item.isImage ? `<img src="${item.content}">` : `<video src="${item.content}" controls poster="${item.poster || ''}"></video>`;
             } else {
                 const url = getEmbedUrl(item.content);
-                contentHtml = `<iframe src="${url}" allowfullscreen allowtransparency="true"></iframe>`;
+                contentHtml = `<iframe src="${url}" scrolling="no"></iframe>`;
             }
-            return `<div class="video-card">${contentHtml}</div>`;
+
+            return `<div class="video-card" id="card-${i}">
+                ${contentHtml}
+                <button class="fullscreen-btn" onclick="toggleFullscreen('card-${i}')">⛶</button>
+            </div>`;
         }).join('');
     }
 
-    function filterByTag(tag) {
-        currentTag = tag;
-        renderAll();
+    function toggleFullscreen(id) {
+        const elem = document.getElementById(id);
+        if (!document.fullscreenElement) {
+            elem.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
+        } else {
+            document.exitFullscreen();
+        }
     }
+
+    function filterByTag(tag) { currentTag = tag; renderAll(); }
 
     function addProject() {
         const type = document.getElementById('mediaType').value;
         const tags = document.getElementById('projectTags').value.split(',').map(t => t.trim().toLowerCase());
+        const posterFile = document.getElementById('posterInput').files[0];
         
-        if (type === 'local') {
-            const file = document.getElementById('localFileInput').files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    db.push({ type: 'local', content: e.target.result, tags, isImage: file.type.startsWith('image/') });
+        let posterData = "";
+        const processSave = (mainContent, isImg) => {
+            if (posterFile) {
+                const pReader = new FileReader();
+                pReader.onload = (pe) => {
+                    db.push({ type, content: mainContent, tags, isImage: isImg, poster: pe.target.result });
                     saveAndRefresh();
                 };
-                reader.readAsDataURL(file);
-            }
-        } else {
-            const content = document.getElementById('embedInput').value.trim();
-            if (content) {
-                db.push({ type: 'embed', content, tags });
+                pReader.readAsDataURL(posterFile);
+            } else {
+                db.push({ type, content: mainContent, tags, isImage: isImg, poster: "" });
                 saveAndRefresh();
             }
+        };
+
+        if (type === 'local') {
+            const file = document.getElementById('localFileInput').files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => processSave(e.target.result, file.type.startsWith('image/'));
+            reader.readAsDataURL(file);
+        } else {
+            processSave(document.getElementById('embedInput').value.trim(), false);
         }
     }
 
     function saveAndRefresh() {
-        localStorage.setItem('rafa_portfolio_gh_v1', JSON.stringify(db));
-        renderAll();
-        toggleAdminMenu();
-        document.getElementById('embedInput').value = "";
-        document.getElementById('projectTags').value = "";
+        localStorage.setItem('rafa_db_portadas_v1', JSON.stringify(db));
+        renderAll(); toggleAdminMenu();
     }
 
     function showPage(pageId, el) {
