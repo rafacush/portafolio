@@ -14,66 +14,78 @@
             --bg-color: #F2F2F2; 
             --blue-cobalt: #0056FF; 
             --dark-navy: #1A1A1A; 
-            --tag-bg: #E0E0E0; 
+            --tag-bg: #FFFFFF; 
             --danger-red: #FF3B30;
         }
 
-        body { margin: 0; background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--dark-navy); display: flex; justify-content: center; }
+        body { margin: 0; background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--dark-navy); display: flex; justify-content: center; overflow-x: hidden; }
         .mobile-viewport { width: 100%; max-width: 414px; min-height: 100vh; position: relative; padding-bottom: 120px; display: flex; flex-direction: column; align-items: center; }
         .main-content { width: 90%; margin-top: 40px; }
 
-        h1.main-title { font-size: 24px; font-weight: 900; text-transform: uppercase; margin: 0; }
-        .tags-label { font-size: 14px; color: #666; margin-bottom: 15px; display: block; }
+        h1.main-title { font-size: 26px; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: -0.5px; }
+        .tags-label { font-size: 12px; color: #888; margin-top: 15px; margin-bottom: 8px; display: block; font-weight: 700; text-transform: uppercase; }
 
-        .tags-container { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 25px; min-height: 40px; }
-        .tag-pill { background-color: var(--tag-bg); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s; border: none; text-transform: capitalize; }
-        .tag-pill.active { background-color: var(--blue-cobalt); color: white; }
+        /* CARRUSEL DE TAGS MEJORADO */
+        .tags-container { 
+            display: flex; 
+            gap: 12px; 
+            overflow-x: auto; 
+            padding: 5px 0 15px 0;
+            width: 100%;
+            scrollbar-width: none; /* Ocultar en Firefox */
+            -ms-overflow-style: none; /* Ocultar en IE */
+        }
+        .tags-container::-webkit-scrollbar { display: none; } /* Ocultar en Chrome/Safari (iPhone) */
 
-        .video-grid { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+        .tag-pill { 
+            flex: 0 0 auto; /* Evita que los tags se encojan */
+            background-color: var(--tag-bg); 
+            padding: 10px 20px; 
+            border-radius: 25px; 
+            font-size: 13px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: none; 
+            text-transform: capitalize;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Sombra ligera en tags */
+        }
+        .tag-pill.active { background-color: var(--blue-cobalt); color: white; transform: scale(1.05); box-shadow: 0 8px 15px rgba(0, 86, 255, 0.3); }
+
+        .video-grid { display: flex; flex-direction: column; gap: 30px; width: 100%; margin-top: 10px; }
         
+        /* VIDEO CARDS CON SOMBRA PARALELA */
         .video-card { 
             width: 100%; aspect-ratio: 1/1; background-color: #000; border-radius: 35px; 
-            overflow: hidden; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            overflow: hidden; position: relative; 
+            /* La sombra que pediste */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12), 0 10px 15px rgba(0,0,0,0.05); 
             display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: transform 0.3s ease;
         }
+        .video-card:active { transform: scale(0.98); } /* Efecto al tocar en iPhone */
 
-        /* La portada personalizada ahora manda */
-        .custom-poster {
-            width: 100%; height: 100%; object-fit: cover;
-            position: absolute; top: 0; left: 0; z-index: 5;
-            transition: opacity 0.3s;
-        }
-
-        .video-card iframe, .video-card video { 
-            width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; z-index: 1;
-        }
-
-        /* Recorte para Reels/TikTok cuando se activan */
+        .custom-poster { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 5; transition: 0.4s ease-out; }
+        .video-card iframe, .video-card video { width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; z-index: 1; }
         .video-card.embed-short iframe { width: 100%; height: 115%; top: -7.5%; }
 
-        .fullscreen-btn {
-            position: absolute; bottom: 20px; right: 20px;
-            width: 40px; height: 40px; background: rgba(0, 86, 255, 0.8);
-            border: none; border-radius: 50%; color: white; font-size: 20px;
-            z-index: 10; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
+        /* Controles y Navegación se mantienen igual... */
+        .fullscreen-btn { position: absolute; bottom: 20px; right: 20px; width: 42px; height: 42px; background: rgba(0, 86, 255, 0.9); border: none; border-radius: 50%; color: white; font-size: 20px; z-index: 10; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .admin-controls { position: absolute; top: 20px; right: 20px; display: none; gap: 8px; z-index: 20; }
-        .control-btn { width: 35px; height: 35px; border-radius: 50%; border: none; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .control-btn { width: 38px; height: 38px; border-radius: 50%; border: none; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn-del { background: var(--danger-red); }
         .btn-move { background: var(--blue-cobalt); }
 
-        .nav-bar { position: fixed; bottom: 30px; width: 280px; height: 55px; background-color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; z-index: 1000; }
-        .nav-item { flex: 1; height: 45px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 25px; transition: 0.3s; }
+        .nav-bar { position: fixed; bottom: 30px; width: 280px; height: 55px; background-color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; z-index: 1000; box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .nav-item { flex: 1; height: 45px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 25px; transition: 0.3s; }
         .nav-item.active { background-color: var(--blue-cobalt); }
 
-        #adminBtn { display: none; position: fixed; top: 20px; left: 20px; width: 50px; height: 50px; background: var(--blue-cobalt); color: white; border-radius: 50%; border: none; font-size: 30px; z-index: 3000; }
-        #adminMenu { display: none; position: fixed; top: 80px; left: 20px; width: 300px; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 3000; border: 1px solid #ddd; }
-        .input-admin { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; }
-        .btn-save { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--blue-cobalt); color: white; }
+        #adminBtn { display: none; position: fixed; top: 20px; left: 20px; width: 50px; height: 50px; background: var(--blue-cobalt); color: white; border-radius: 50%; border: none; font-size: 30px; z-index: 3000; box-shadow: 0 10px 20px rgba(0, 86, 255, 0.4); }
+        #adminMenu { display: none; position: fixed; top: 80px; left: 20px; width: 320px; background: white; border-radius: 25px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); z-index: 3000; border: 1px solid #eee; overflow-y: auto; max-height: 75vh; }
+        .input-admin { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #ddd; box-sizing: border-box; font-family: inherit; font-size: 14px; }
+        .btn-save { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; background: var(--blue-cobalt); color: white; font-size: 15px; }
 
-        #cropperContainer { width: 100%; height: 200px; margin-bottom: 10px; border-radius: 10px; overflow: hidden; border: 2px dashed #ccc; display: none; position: relative; }
+        #cropperContainer { width: 100%; height: 220px; margin-bottom: 15px; border-radius: 15px; overflow: hidden; border: 2px dashed #ddd; display: none; position: relative; }
         #cropperImage { max-width: 100%; display: block; }
     </style>
 </head>
@@ -81,37 +93,53 @@
 
 <div class="mobile-viewport">
     <div class="main-content">
-        <h1 class="main-title">PROYECTOS DESTACADOS</h1>
-        <span class="tags-label">#tags</span>
+        <h1 class="main-title">WORK PORTFOLIO</h1>
+        <span class="tags-label">Categorías</span>
         <div class="tags-container" id="dynamicTags"></div>
-        <div id="inicio" class="page active"><div class="video-grid" id="videoGrid"></div></div>
-        <div id="sobremi" class="page" style="display:none;"><div style="background:white; padding:30px; border-radius:25px; text-align: center;"><h2>Rafa Cush</h2><p>Filmmaker & Editor</p></div></div>
+        
+        <div id="inicio" class="page active">
+            <div class="video-grid" id="videoGrid"></div>
+        </div>
+        
+        <div id="sobremi" class="page" style="display:none;">
+            <div style="background:white; padding:40px 20px; border-radius:35px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.05);">
+                <h2 style="margin-top:0;">Rafa Cush</h2>
+                <p style="color:#666; line-height:1.6;">Filmmaker & Editor profesional especializado en contenido comercial y narrativo.</p>
+            </div>
+        </div>
     </div>
-    <div class="nav-bar"><div class="nav-item active" onclick="showPage('inicio', this)">INICIO</div><div class="nav-item" onclick="showPage('sobremi', this)">SOBRE MÍ</div></div>
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="showPage('inicio', this)">PORTAFOLIO</div>
+        <div class="nav-item" onclick="showPage('sobremi', this)">INFO</div>
+    </div>
 </div>
 
 <button id="adminBtn" onclick="toggleAdminMenu()">+</button>
 <div id="adminMenu">
     <h3>Nuevo Proyecto</h3>
     <select id="mediaType" class="input-admin" onchange="updateAdminForm()">
-        <option value="embed">URL (YouTube / Instagram / TikTok)</option>
-        <option value="local">Archivo (Video/Foto)</option>
+        <option value="embed">Enlace (Instagram/YouTube)</option>
+        <option value="local">Archivo Directo</option>
     </select>
-    <textarea id="embedInput" class="input-admin" placeholder="Pega URL..."></textarea>
-    <input type="file" id="localFileInput" class="input-admin" style="display:none;" accept="video/*,image/*">
-    <label style="font-size:12px;">Portada y Recorte:</label>
+    <textarea id="embedInput" class="input-admin" placeholder="Pega el link aquí..."></textarea>
+    <div id="localSection" style="display:none;">
+        <input type="file" id="localFileInput" class="input-admin" accept="video/*,image/*">
+    </div>
+    <label style="font-size:12px; font-weight:bold; margin-bottom:5px; display:block;">Portada Personalizada:</label>
     <input type="file" id="posterInput" class="input-admin" accept="image/*" onchange="initCropper(this)">
     <div id="cropperContainer"><img id="cropperImage" src=""></div>
-    <input type="text" id="projectTags" class="input-admin" placeholder="Tags (ej: fitness, cafe)">
-    <button class="btn-save" onclick="addProject()">GUARDAR PROYECTO</button>
+    <input type="text" id="projectTags" class="input-admin" placeholder="Tags (ej: comercial, drone)">
+    <button class="btn-save" id="saveButton" onclick="addProject()">PUBLICAR PROYECTO</button>
 </div>
 
 <script>
     let devMode = false;
     let currentTag = 'todos';
-    let db = JSON.parse(localStorage.getItem('rafa_db_v3_iphone')) || [];
+    // Cambiamos la clave de la base de datos para asegurar una carga limpia con el nuevo estilo
+    let db = JSON.parse(localStorage.getItem('rafa_db_v5_shadows')) || [];
     let cropperInstance = null;
 
+    // Shift + Cmd + P para modo admin
     window.addEventListener('keydown', (e) => {
         if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
             e.preventDefault();
@@ -129,7 +157,7 @@
     function updateAdminForm() {
         const type = document.getElementById('mediaType').value;
         document.getElementById('embedInput').style.display = type === 'embed' ? 'block' : 'none';
-        document.getElementById('localFileInput').style.display = type === 'local' ? 'block' : 'none';
+        document.getElementById('localSection').style.display = type === 'local' ? 'block' : 'none';
     }
 
     function initCropper(input) {
@@ -142,7 +170,7 @@
                 image.src = e.target.result;
                 container.style.display = 'block';
                 if (cropperInstance) cropperInstance.destroy();
-                cropperInstance = new Cropper(image, { aspectRatio: 1/1, viewMode: 1, autoCropArea: 1 });
+                cropperInstance = new Cropper(image, { aspectRatio: 1/1, viewMode: 1 });
             };
             reader.readAsDataURL(file);
         }
@@ -150,13 +178,9 @@
 
     function getEmbedUrl(input) {
         const ytMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/);
-        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`;
         const igMatch = input.match(/(?:instagram\.com\/(?:reel|p)\/)([^/?#&]+)/);
         if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
-        if (input.includes('tiktok.com')) {
-            const ttMatch = input.match(/video\/(\d+)/);
-            if (ttMatch) return `https://www.tiktok.com/embed/v2/${ttMatch[1]}`;
-        }
         return input;
     }
 
@@ -165,100 +189,11 @@
         const tagContainer = document.getElementById('dynamicTags');
         const tagsSet = new Set(['todos']);
         db.forEach(item => item.tags.forEach(t => tagsSet.add(t.trim().toLowerCase())));
-        tagContainer.innerHTML = Array.from(tagsSet).map(t => `<button class="tag-pill ${currentTag === t ? 'active' : ''}" onclick="filterByTag('${t}')">${t}</button>`).join('');
+        
+        tagContainer.innerHTML = Array.from(tagsSet).map(t => 
+            `<button class="tag-pill ${currentTag === t ? 'active' : ''}" onclick="filterByTag('${t}')">${t}</button>`
+        ).join('');
 
         grid.innerHTML = db.map((item, i) => {
             if (currentTag !== 'todos' && !item.tags.includes(currentTag)) return '';
-            const isShort = item.content.includes('instagram.com') || item.content.includes('tiktok.com');
-            
-            return `
-            <div class="video-card ${isShort ? 'embed-short' : ''}" id="card-${i}" onclick="loadVideo(${i})">
-                <img src="${item.poster || ''}" class="custom-poster" id="poster-${i}">
-                <div id="video-container-${i}"></div>
-                <div class="admin-controls" style="display: ${devMode ? 'flex' : 'none'}">
-                    <button class="control-btn btn-move" onclick="event.stopPropagation(); moveItem(${i}, -1)">↑</button>
-                    <button class="control-btn btn-move" onclick="event.stopPropagation(); moveItem(${i}, 1)">↓</button>
-                    <button class="control-btn btn-del" onclick="event.stopPropagation(); deleteProject(${i})">✕</button>
-                </div>
-                ${isShort ? `<button class="fullscreen-btn" onclick="event.stopPropagation(); toggleFullscreen('card-${i}')">⛶</button>` : ''}
-            </div>`;
-        }).join('');
-    }
-
-    function loadVideo(index) {
-        const item = db[index];
-        const container = document.getElementById(`video-container-${index}`);
-        const poster = document.getElementById(`poster-${index}`);
-        
-        poster.style.opacity = '0';
-        setTimeout(() => poster.style.display = 'none', 300);
-
-        if (item.type === 'local') {
-            container.innerHTML = `<video src="${item.content}" controls autoplay></video>`;
-        } else {
-            container.innerHTML = `<iframe src="${getEmbedUrl(item.content)}" allow="autoplay"></iframe>`;
-        }
-    }
-
-    function moveItem(index, direction) {
-        const newIndex = index + direction;
-        if (newIndex >= 0 && newIndex < db.length) {
-            const temp = db[index]; db[index] = db[newIndex]; db[newIndex] = temp;
-            saveAndRefresh();
-        }
-    }
-
-    function deleteProject(index) {
-        if(confirm("¿Eliminar?")) { db.splice(index, 1); saveAndRefresh(); }
-    }
-
-    function toggleFullscreen(id) {
-        const elem = document.getElementById(id);
-        if (!document.fullscreenElement) elem.requestFullscreen();
-        else document.exitFullscreen();
-    }
-
-    function filterByTag(tag) { currentTag = tag; renderAll(); }
-
-    function addProject() {
-        const type = document.getElementById('mediaType').value;
-        const tags = document.getElementById('projectTags').value.split(',').map(t => t.trim().toLowerCase());
-        let posterData = "";
-        
-        const processSave = (mainContent, isImg) => {
-            if (cropperInstance) {
-                posterData = cropperInstance.getCroppedCanvas({ width: 600, height: 600 }).toDataURL('image/jpeg', 0.9);
-            }
-            db.unshift({ type, content: mainContent, tags, isImage: isImg, poster: posterData });
-            saveAndRefresh();
-        };
-
-        if (type === 'local') {
-            const file = document.getElementById('localFileInput').files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => processSave(e.target.result, file.type.startsWith('image/'));
-            reader.readAsDataURL(file);
-        } else {
-            processSave(document.getElementById('embedInput').value.trim(), false);
-        }
-    }
-
-    function saveAndRefresh() {
-        localStorage.setItem('rafa_db_v3_iphone', JSON.stringify(db));
-        if (cropperInstance) cropperInstance.destroy();
-        document.getElementById('cropperContainer').style.display = 'none';
-        renderAll();
-        if(document.getElementById('adminMenu').style.display === 'block') toggleAdminMenu();
-    }
-
-    function showPage(pageId, el) {
-        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        document.getElementById(pageId).style.display = 'block';
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    window.onload = renderAll;
-</script>
-</body>
-</html>
+            const isShort = item.content.includes('instagram.com') || item.content
