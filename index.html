@@ -34,41 +34,35 @@
         .video-card { 
             width: 100%; aspect-ratio: 1/1; background-color: #000; border-radius: 35px; 
             overflow: hidden; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
 
-        .video-card iframe, .video-card video, .video-card img { 
-            width: 100%; height: 100%; border: none; object-fit: cover; 
-            position: absolute; top: 0; left: 0;
+        /* La portada personalizada ahora manda */
+        .custom-poster {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0; z-index: 5;
+            transition: opacity 0.3s;
         }
 
-        /* Recorte especial SOLO para Instagram y TikTok */
-        .video-card.embed-short iframe { 
-            width: 100%; height: 115%; 
-            position: absolute; top: -7.5%; 
+        .video-card iframe, .video-card video { 
+            width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; z-index: 1;
         }
+
+        /* Recorte para Reels/TikTok cuando se activan */
+        .video-card.embed-short iframe { width: 100%; height: 115%; top: -7.5%; }
 
         .fullscreen-btn {
             position: absolute; bottom: 20px; right: 20px;
             width: 40px; height: 40px; background: rgba(0, 86, 255, 0.8);
             border: none; border-radius: 50%; color: white; font-size: 20px;
-            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+            z-index: 10; display: flex; align-items: center; justify-content: center;
             backdrop-filter: blur(5px);
         }
 
-        /* Controles de Administración */
-        .admin-controls { 
-            position: absolute; top: 20px; right: 20px; 
-            display: none; gap: 8px; z-index: 20; 
-        }
-        .control-btn { 
-            width: 35px; height: 35px; border-radius: 50%; border: none; 
-            color: white; font-weight: bold; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-        }
+        .admin-controls { position: absolute; top: 20px; right: 20px; display: none; gap: 8px; z-index: 20; }
+        .control-btn { width: 35px; height: 35px; border-radius: 50%; border: none; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn-del { background: var(--danger-red); }
-        .btn-move { background: var(--blue-cobalt); font-size: 18px; }
+        .btn-move { background: var(--blue-cobalt); }
 
         .nav-bar { position: fixed; bottom: 30px; width: 280px; height: 55px; background-color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; z-index: 1000; }
         .nav-item { flex: 1; height: 45px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 25px; transition: 0.3s; }
@@ -90,7 +84,6 @@
         <h1 class="main-title">PROYECTOS DESTACADOS</h1>
         <span class="tags-label">#tags</span>
         <div class="tags-container" id="dynamicTags"></div>
-        <span style="font-weight:700; display:block; margin-bottom:15px;">Mas recientes</span>
         <div id="inicio" class="page active"><div class="video-grid" id="videoGrid"></div></div>
         <div id="sobremi" class="page" style="display:none;"><div style="background:white; padding:30px; border-radius:25px; text-align: center;"><h2>Rafa Cush</h2><p>Filmmaker & Editor</p></div></div>
     </div>
@@ -116,10 +109,9 @@
 <script>
     let devMode = false;
     let currentTag = 'todos';
-    let db = JSON.parse(localStorage.getItem('rafa_db_final_v1')) || [];
+    let db = JSON.parse(localStorage.getItem('rafa_db_v3_iphone')) || [];
     let cropperInstance = null;
 
-    // Comando Secreto: Shift + Command + P
     window.addEventListener('keydown', (e) => {
         if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
             e.preventDefault();
@@ -150,7 +142,7 @@
                 image.src = e.target.result;
                 container.style.display = 'block';
                 if (cropperInstance) cropperInstance.destroy();
-                cropperInstance = new Cropper(image, { aspectRatio: 1/1, viewMode: 1, zoomable: true, movable: true });
+                cropperInstance = new Cropper(image, { aspectRatio: 1/1, viewMode: 1, autoCropArea: 1 });
             };
             reader.readAsDataURL(file);
         }
@@ -158,9 +150,9 @@
 
     function getEmbedUrl(input) {
         const ytMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/);
-        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?enablejsapi=1`;
+        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
         const igMatch = input.match(/(?:instagram\.com\/(?:reel|p)\/)([^/?#&]+)/);
-        if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/captioned/`;
+        if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/`;
         if (input.includes('tiktok.com')) {
             const ttMatch = input.match(/video\/(\d+)/);
             if (ttMatch) return `https://www.tiktok.com/embed/v2/${ttMatch[1]}`;
@@ -177,41 +169,47 @@
 
         grid.innerHTML = db.map((item, i) => {
             if (currentTag !== 'todos' && !item.tags.includes(currentTag)) return '';
+            const isShort = item.content.includes('instagram.com') || item.content.includes('tiktok.com');
             
-            let contentHtml = "";
-            let isShortForm = item.content.includes('instagram.com') || item.content.includes('tiktok.com');
-
-            if (item.type === 'local') {
-                contentHtml = item.isImage ? `<img src="${item.content}">` : `<video src="${item.content}" controls poster="${item.poster || ''}"></video>`;
-            } else {
-                const url = getEmbedUrl(item.content);
-                contentHtml = `<iframe src="${url}" scrolling="no"></iframe>`;
-            }
-
-            return `<div class="video-card ${isShortForm ? 'embed-short' : ''}" id="card-${i}">
-                ${contentHtml}
+            return `
+            <div class="video-card ${isShort ? 'embed-short' : ''}" id="card-${i}" onclick="loadVideo(${i})">
+                <img src="${item.poster || ''}" class="custom-poster" id="poster-${i}">
+                <div id="video-container-${i}"></div>
                 <div class="admin-controls" style="display: ${devMode ? 'flex' : 'none'}">
-                    <button class="control-btn btn-move" onclick="moveItem(${i}, -1)">↑</button>
-                    <button class="control-btn btn-move" onclick="moveItem(${i}, 1)">↓</button>
-                    <button class="control-btn btn-del" onclick="deleteProject(${i})">✕</button>
+                    <button class="control-btn btn-move" onclick="event.stopPropagation(); moveItem(${i}, -1)">↑</button>
+                    <button class="control-btn btn-move" onclick="event.stopPropagation(); moveItem(${i}, 1)">↓</button>
+                    <button class="control-btn btn-del" onclick="event.stopPropagation(); deleteProject(${i})">✕</button>
                 </div>
-                ${isShortForm ? `<button class="fullscreen-btn" onclick="toggleFullscreen('card-${i}')">⛶</button>` : ''}
+                ${isShort ? `<button class="fullscreen-btn" onclick="event.stopPropagation(); toggleFullscreen('card-${i}')">⛶</button>` : ''}
             </div>`;
         }).join('');
+    }
+
+    function loadVideo(index) {
+        const item = db[index];
+        const container = document.getElementById(`video-container-${index}`);
+        const poster = document.getElementById(`poster-${index}`);
+        
+        poster.style.opacity = '0';
+        setTimeout(() => poster.style.display = 'none', 300);
+
+        if (item.type === 'local') {
+            container.innerHTML = `<video src="${item.content}" controls autoplay></video>`;
+        } else {
+            container.innerHTML = `<iframe src="${getEmbedUrl(item.content)}" allow="autoplay"></iframe>`;
+        }
     }
 
     function moveItem(index, direction) {
         const newIndex = index + direction;
         if (newIndex >= 0 && newIndex < db.length) {
-            const temp = db[index];
-            db[index] = db[newIndex];
-            db[newIndex] = temp;
+            const temp = db[index]; db[index] = db[newIndex]; db[newIndex] = temp;
             saveAndRefresh();
         }
     }
 
     function deleteProject(index) {
-        if(confirm("¿Eliminar este video del portafolio?")) { db.splice(index, 1); saveAndRefresh(); }
+        if(confirm("¿Eliminar?")) { db.splice(index, 1); saveAndRefresh(); }
     }
 
     function toggleFullscreen(id) {
@@ -228,27 +226,26 @@
         let posterData = "";
         
         const processSave = (mainContent, isImg) => {
-            if (cropperInstance) posterData = cropperInstance.getCroppedCanvas({ width: 400, height: 400 }).toDataURL('image/jpeg', 0.8);
+            if (cropperInstance) {
+                posterData = cropperInstance.getCroppedCanvas({ width: 600, height: 600 }).toDataURL('image/jpeg', 0.9);
+            }
             db.unshift({ type, content: mainContent, tags, isImage: isImg, poster: posterData });
             saveAndRefresh();
         };
 
         if (type === 'local') {
             const file = document.getElementById('localFileInput').files[0];
-            if (!file) return alert("Selecciona un archivo");
             const reader = new FileReader();
             reader.onload = (e) => processSave(e.target.result, file.type.startsWith('image/'));
             reader.readAsDataURL(file);
         } else {
-            const val = document.getElementById('embedInput').value.trim();
-            if (!val) return alert("Pega una URL");
-            processSave(val, false);
+            processSave(document.getElementById('embedInput').value.trim(), false);
         }
     }
 
     function saveAndRefresh() {
-        localStorage.setItem('rafa_db_final_v1', JSON.stringify(db));
-        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+        localStorage.setItem('rafa_db_v3_iphone', JSON.stringify(db));
+        if (cropperInstance) cropperInstance.destroy();
         document.getElementById('cropperContainer').style.display = 'none';
         renderAll();
         if(document.getElementById('adminMenu').style.display === 'block') toggleAdminMenu();
