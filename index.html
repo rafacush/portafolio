@@ -5,17 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portafolio - Rafa Cush</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
     <style>
         :root {
             --bg-color: #F2F2F2; 
             --blue-cobalt: #0056FF; 
             --dark-navy: #1A1A1A; 
             --tag-bg: #E0E0E0; 
-            --danger-red: #FF3B30;
         }
 
         body { margin: 0; background-color: var(--bg-color); font-family: 'Inter', sans-serif; color: var(--dark-navy); display: flex; justify-content: center; }
@@ -30,56 +25,22 @@
         .tag-pill.active { background-color: var(--blue-cobalt); color: white; }
 
         .video-grid { display: flex; flex-direction: column; gap: 20px; width: 100%; }
-        
-        /* Contenedor base de la tarjeta */
         .video-card { 
             width: 100%; aspect-ratio: 1/1; background-color: #000; border-radius: 35px; 
             overflow: hidden; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
             display: flex; align-items: center; justify-content: center;
         }
-
-        /* Estilos por defecto (YouTube y Local) */
-        .video-card iframe, .video-card video, .video-card img { 
-            width: 100%; height: 100%; border: none; object-fit: cover; 
-            position: absolute; top: 0; left: 0;
-        }
-
-        /* CORRECCIÓN: Recorte especial SOLO para Instagram */
-        .video-card.instagram-embed iframe { 
-            width: 100%; height: 115%; /* Más alto para empujar la UI */
-            position: absolute; top: -7.5%; /* Centrado vertical para recortar arriba y abajo */
-            scrolling: no;
-        }
-
-        .fullscreen-btn {
-            position: absolute; bottom: 20px; right: 20px;
-            width: 40px; height: 40px; background: rgba(0, 86, 255, 0.8);
-            border: none; border-radius: 50%; color: white; font-size: 20px;
-            cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
-        /* Botón de Eliminar (Solo visible en Modo Dev) */
-        .delete-btn {
-            position: absolute; top: 20px; right: 20px;
-            width: 35px; height: 35px; background: var(--danger-red);
-            border: none; border-radius: 50%; color: white; font-weight: bold;
-            cursor: pointer; z-index: 15; display: none; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
+        iframe, video, img { width: 100%; height: 100%; border: none; display: block; object-fit: cover; }
 
         .nav-bar { position: fixed; bottom: 30px; width: 280px; height: 55px; background-color: #000; border-radius: 30px; display: flex; align-items: center; justify-content: space-between; padding: 0 5px; z-index: 1000; }
         .nav-item { flex: 1; height: 45px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px; font-weight: 700; cursor: pointer; border-radius: 25px; transition: 0.3s; }
         .nav-item.active { background-color: var(--blue-cobalt); }
 
-        #adminBtn { display: none; position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: var(--blue-cobalt); color: white; border-radius: 50%; border: none; font-size: 30px; z-index: 3000; }
+        /* Estilos Admin */
+        #adminBtn { display: none; position: fixed; top: 20px; right: 20px; width: 50px; height: 50px; background: var(--blue-cobalt); color: white; border-radius: 50%; border: none; font-size: 30px; font-weight: bold; cursor: pointer; z-index: 3000; }
         #adminMenu { display: none; position: fixed; top: 80px; right: 20px; width: 300px; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 3000; border: 1px solid #ddd; }
+        .btn-save { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--blue-cobalt); color: white; margin-top: 10px; }
         .input-admin { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-family: inherit; }
-        .btn-save { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--blue-cobalt); color: white; }
-
-        /* Contenedor del Editor de Recorte */
-        #cropperContainer { width: 100%; height: 200px; margin-bottom: 10px; border-radius: 10px; overflow: hidden; border: 2px dashed #ccc; display: none; position: relative; }
-        #cropperImage { max-width: 100%; display: block; }
     </style>
 </head>
 <body>
@@ -90,10 +51,23 @@
         <span class="tags-label">#tags</span>
         <div class="tags-container" id="dynamicTags"></div>
         <span style="font-weight:700; display:block; margin-bottom:15px;">Mas recientes</span>
-        <div id="inicio" class="page active"><div class="video-grid" id="videoGrid"></div></div>
-        <div id="sobremi" class="page" style="display:none;"><div style="background:white; padding:30px; border-radius:25px; text-align: center;"><h2>Rafa Cush</h2><p>Filmmaker & Editor</p></div></div>
+
+        <div id="inicio" class="page active">
+            <div class="video-grid" id="videoGrid"></div>
+        </div>
+
+        <div id="sobremi" class="page" style="display:none;">
+            <div style="background:white; padding:30px; border-radius:25px; text-align: center;">
+                <h2>Rafa Cush</h2>
+                <p>Filmmaker & Editor</p>
+            </div>
+        </div>
     </div>
-    <div class="nav-bar"><div class="nav-item active" onclick="showPage('inicio', this)">INICIO</div><div class="nav-item" onclick="showPage('sobremi', this)">SOBRE MÍ</div></div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="showPage('inicio', this)">INICIO</div>
+        <div class="nav-item" onclick="showPage('sobremi', this)">SOBRE MÍ</div>
+    </div>
 </div>
 
 <button id="adminBtn" onclick="toggleAdminMenu()">+</button>
@@ -101,37 +75,31 @@
     <h3>Nuevo Proyecto</h3>
     <select id="mediaType" class="input-admin" onchange="updateAdminForm()">
         <option value="embed">URL (YouTube / Instagram)</option>
-        <option value="local">Archivo (Video/Foto)</option>
+        <option value="local">Archivo del MacBook (Video/Foto)</option>
     </select>
-    <textarea id="embedInput" class="input-admin" placeholder="Pega URL..."></textarea>
+    <textarea id="embedInput" class="input-admin" placeholder="Pega URL o código iframe..."></textarea>
     <input type="file" id="localFileInput" class="input-admin" style="display:none;" accept="video/*,image/*">
-    <label style="font-size:12px;">Portada y Recorte:</label>
-    <input type="file" id="posterInput" class="input-admin" accept="image/*" onchange="initCropper(this)">
-    <div id="cropperContainer"><img id="cropperImage" src=""></div>
-    <input type="text" id="projectTags" class="input-admin" placeholder="Tags (ej: fitness, cafe)">
-    <button class="btn-save" onclick="addProject()">GUARDAR PROYECTO</button>
+    <input type="text" id="projectTags" class="input-admin" placeholder="Tags (ej: fitness, comercial)">
+    <button class="btn-action btn-save" onclick="addProject()">GUARDAR</button>
 </div>
 
 <script>
     let devMode = false;
     let currentTag = 'todos';
-    let db = JSON.parse(localStorage.getItem('rafa_db_master_v1')) || [];
-    let cropperInstance = null;
+    let db = JSON.parse(localStorage.getItem('rafa_portfolio_gh_v1')) || [];
 
+    // Comando Secreto: Shift + Command + P
     window.addEventListener('keydown', (e) => {
         if (e.shiftKey && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
             e.preventDefault();
             devMode = !devMode;
             document.getElementById('adminBtn').style.display = devMode ? 'block' : 'none';
-            renderAll(); // Refrescar para mostrar/ocultar controles de administración
         }
     });
 
     function toggleAdminMenu() {
         const m = document.getElementById('adminMenu');
-        m.style.display = m.style.display === 'block' ? 'none' : 'block';
-        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
-        document.getElementById('cropperContainer').style.display = 'none';
+        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
     }
 
     function updateAdminForm() {
@@ -140,98 +108,79 @@
         document.getElementById('localFileInput').style.display = type === 'local' ? 'block' : 'none';
     }
 
-    function initCropper(input) {
-        const file = input.files[0];
-        const container = document.getElementById('cropperContainer');
-        const image = document.getElementById('cropperImage');
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                image.src = e.target.result;
-                container.style.display = 'block';
-                if (cropperInstance) cropperInstance.destroy();
-                cropperInstance = new Cropper(image, { aspectRatio: 1/1, viewMode: 1, zoomable: true, movable: true });
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
     function getEmbedUrl(input) {
+        if (input.includes('<iframe')) {
+            const srcMatch = input.match(/src=["']([^"']+)["']/);
+            return srcMatch ? srcMatch[1] : null;
+        }
         const ytMatch = input.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/);
-        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?enablejsapi=1&autoplay=0`;
+        if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?enablejsapi=1`;
         const igMatch = input.match(/(?:instagram\.com\/(?:reel|p)\/)([^/?#&]+)/);
-        if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed/captioned/`;
+        if (igMatch) return `https://www.instagram.com/reel/${igMatch[1]}/embed`;
         return input;
     }
 
     function renderAll() {
         const grid = document.getElementById('videoGrid');
         const tagContainer = document.getElementById('dynamicTags');
+        
         const tagsSet = new Set(['todos']);
         db.forEach(item => item.tags.forEach(t => tagsSet.add(t.trim().toLowerCase())));
-        tagContainer.innerHTML = Array.from(tagsSet).map(t => `<button class="tag-pill ${currentTag === t ? 'active' : ''}" onclick="filterByTag('${t}')">${t}</button>`).join('');
+        
+        tagContainer.innerHTML = Array.from(tagsSet).map(t => 
+            `<button class="tag-pill ${currentTag === t ? 'active' : ''}" onclick="filterByTag('${t}')">${t}</button>`
+        ).join('');
 
         grid.innerHTML = db.map((item, i) => {
             if (currentTag !== 'todos' && !item.tags.includes(currentTag)) return '';
             
             let contentHtml = "";
-            let extraClass = "";
-
             if (item.type === 'local') {
-                contentHtml = item.isImage ? `<img src="${item.content}">` : `<video src="${item.content}" controls poster="${item.poster || ''}"></video>`;
+                contentHtml = item.isImage 
+                    ? `<img src="${item.content}">` 
+                    : `<video src="${item.content}" controls playsinline></video>`;
             } else {
                 const url = getEmbedUrl(item.content);
-                // Detectar si es Instagram para aplicar el recorte especial
-                if (item.content.includes('instagram.com')) extraClass = "instagram-embed";
-                contentHtml = `<iframe src="${url}" scrolling="no"></iframe>`;
+                contentHtml = `<iframe src="${url}" allowfullscreen allowtransparency="true"></iframe>`;
             }
-
-            return `<div class="video-card ${extraClass}" id="card-${i}">
-                ${contentHtml}
-                <button class="delete-btn" style="display: ${devMode ? 'flex' : 'none'}" onclick="deleteProject(${i})">✕</button>
-                <button class="fullscreen-btn" onclick="toggleFullscreen('card-${i}')">⛶</button>
-            </div>`;
+            return `<div class="video-card">${contentHtml}</div>`;
         }).join('');
     }
 
-    function deleteProject(index) {
-        if(confirm("¿Estás seguro de que quieres eliminar este video?")) {
-            db.splice(index, 1);
-            saveAndRefresh();
-        }
+    function filterByTag(tag) {
+        currentTag = tag;
+        renderAll();
     }
-
-    function toggleFullscreen(id) {
-        const elem = document.getElementById(id);
-        if (!document.fullscreenElement) elem.requestFullscreen();
-        else document.exitFullscreen();
-    }
-
-    function filterByTag(tag) { currentTag = tag; renderAll(); }
 
     function addProject() {
         const type = document.getElementById('mediaType').value;
         const tags = document.getElementById('projectTags').value.split(',').map(t => t.trim().toLowerCase());
-        let posterData = "";
-        const processSave = (mainContent, isImg) => {
-            if (cropperInstance) posterData = cropperInstance.getCroppedCanvas({ width: 400, height: 400 }).toDataURL('image/jpeg', 0.8);
-            db.push({ type, content: mainContent, tags, isImage: isImg, poster: posterData });
-            saveAndRefresh();
-        };
+        
         if (type === 'local') {
             const file = document.getElementById('localFileInput').files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => processSave(e.target.result, file.type.startsWith('image/'));
-            reader.readAsDataURL(file);
-        } else processSave(document.getElementById('embedInput').value.trim(), false);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    db.push({ type: 'local', content: e.target.result, tags, isImage: file.type.startsWith('image/') });
+                    saveAndRefresh();
+                };
+                reader.readAsDataURL(file);
+            }
+        } else {
+            const content = document.getElementById('embedInput').value.trim();
+            if (content) {
+                db.push({ type: 'embed', content, tags });
+                saveAndRefresh();
+            }
+        }
     }
 
     function saveAndRefresh() {
-        localStorage.setItem('rafa_db_master_v1', JSON.stringify(db));
-        if (cropperInstance) cropperInstance.destroy();
-        document.getElementById('cropperContainer').style.display = 'none';
+        localStorage.setItem('rafa_portfolio_gh_v1', JSON.stringify(db));
         renderAll();
-        if(document.getElementById('adminMenu').style.display === 'block') toggleAdminMenu();
+        toggleAdminMenu();
+        document.getElementById('embedInput').value = "";
+        document.getElementById('projectTags').value = "";
     }
 
     function showPage(pageId, el) {
